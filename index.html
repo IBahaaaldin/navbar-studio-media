@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Media Dock Navbar — Ready-UIs</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          keyframes: {
+            eq1: { '0%, 100%': { height: '4px' }, '50%': { height: '14px' } },
+            eq2: { '0%, 100%': { height: '14px' }, '50%': { height: '6px' } },
+            eq3: { '0%, 100%': { height: '8px' }, '50%': { height: '16px' } },
+            eq4: { '0%, 100%': { height: '12px' }, '50%': { height: '4px' } },
+          },
+          animation: {
+            'eq-1': 'eq1 0.8s ease-in-out infinite',
+            'eq-2': 'eq2 0.6s ease-in-out infinite',
+            'eq-3': 'eq3 0.7s ease-in-out infinite',
+            'eq-4': 'eq4 0.9s ease-in-out infinite',
+            'spin-slow': 'spin 5s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Smooth global theme transition */
+    html, body {
+      transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Dark Mode Glass */
+    .dark .studio-dock {
+      background: rgba(12, 14, 20, 0.88);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 35px 80px -20px rgba(0, 0, 0, 0.9),
+                  0 0 0 1px rgba(255, 255, 255, 0.05),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Light Mode Glass */
+    .studio-dock {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.12),
+                  0 0 0 1px rgba(0, 0, 0, 0.04),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 1);
+    }
+
+    /* Vinyl disc spinning state */
+    .vinyl-paused {
+      animation-play-state: paused !important;
+    }
+    .eq-paused {
+      animation-play-state: paused !important;
+      height: 3px !important;
+    }
+
+    /* Magnetic pill indicator */
+    #tabIndicator {
+      transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+                  width 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.2s ease;
+    }
+  </style>
+</head>
+<body class="bg-white dark:bg-black text-neutral-900 dark:text-neutral-100 min-h-screen flex items-center justify-center p-4 selection:bg-amber-500 selection:text-white relative overflow-x-hidden">
+
+  <!-- ============================================================ -->
+  <!-- DEAD-CENTER FLOATING STUDIO MEDIA NAVBAR CONTAINER           -->
+  <!-- ============================================================ -->
+  <header class="w-full max-w-5xl flex flex-col items-center justify-center z-40 relative">
+
+    <!-- DESKTOP STUDIO DOCK (hidden on small screens, flex on md+) -->
+    <nav class="studio-dock hidden md:flex items-center gap-3.5 px-4 py-2.5 rounded-full select-none relative transition-all duration-300">
+      
+      <!-- 1. CREATOR BRAND BADGE -->
+      <a href="https://github.com/IBahaaaldin" target="_blank" rel="noopener noreferrer" 
+         class="group flex items-center gap-3 pl-1 pr-3 py-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+        <div class="relative w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 p-[1.5px] flex items-center justify-center shadow-lg shadow-amber-500/25 flex-shrink-0 transition-transform group-hover:scale-105">
+          <div class="w-full h-full bg-neutral-900 rounded-full flex items-center justify-center text-xs font-black text-white">
+            BM
+          </div>
+          <!-- Pulse Dot -->
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-black"></span>
+        </div>
+        <div class="flex flex-col text-left leading-tight">
+          <span class="text-xs font-bold text-neutral-900 dark:text-white tracking-tight whitespace-nowrap">Bahaa Mohammed</span>
+          <span class="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium whitespace-nowrap">Creative Software Engineer</span>
+        </div>
+      </a>
+
+      <!-- VERTICAL DIVIDER -->
+      <div class="h-6 w-[1px] bg-neutral-200 dark:bg-neutral-800 flex-shrink-0"></div>
+
+      <!-- 2. INTEGRATED AUDIO MEDIA PLAYER PILL (FEATURE HIGHLIGHT) -->
+      <div id="mediaPlayerPill" class="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/10 transition-colors">
+        <!-- Rotating Vinyl Disk -->
+        <div id="vinylDisk" class="w-6 h-6 rounded-full bg-neutral-900 border border-neutral-700 p-0.5 flex items-center justify-center relative shadow-sm flex-shrink-0 animate-spin-slow">
+          <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+          <div class="absolute inset-0 rounded-full border border-white/20"></div>
+        </div>
+
+        <!-- Track Info -->
+        <div class="flex flex-col text-left leading-tight cursor-pointer" id="trackSwitcher" title="Click to change track">
+          <span id="trackTitle" class="text-[11px] font-mono font-bold text-neutral-800 dark:text-neutral-200 whitespace-nowrap max-w-[130px] truncate">
+            Lofi Code Beats
+          </span>
+          <span id="trackBpm" class="text-[9px] font-mono text-amber-500 dark:text-amber-400 font-medium whitespace-nowrap">
+            128 BPM • DUBAI FM
+          </span>
+        </div>
+
+        <!-- Dancing Equalizer Bars -->
+        <div class="flex items-end gap-[2px] h-4 px-1" id="eqContainer">
+          <span class="w-[2.5px] rounded-full bg-amber-500 dark:bg-amber-400 animate-eq-1"></span>
+          <span class="w-[2.5px] rounded-full bg-orange-500 dark:bg-orange-400 animate-eq-2"></span>
+          <span class="w-[2.5px] rounded-full bg-rose-500 dark:bg-rose-400 animate-eq-3"></span>
+          <span class="w-[2.5px] rounded-full bg-amber-400 dark:bg-amber-300 animate-eq-4"></span>
+        </div>
+
+        <!-- Play / Pause Toggle Button -->
+        <button id="playPauseBtn" type="button" aria-label="Toggle Audio Playback"
+                class="w-6 h-6 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform flex-shrink-0">
+          <!-- Pause Icon (default playing) -->
+          <svg id="pauseIcon" class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+            <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+            <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+          </svg>
+          <!-- Play Icon (hidden by default) -->
+          <svg id="playIcon" class="w-3 h-3 fill-current hidden ml-0.5" viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </button>
+
+        <!-- Next Track Button -->
+        <button id="nextTrackBtn" type="button" aria-label="Next Track"
+                class="w-5 h-5 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white flex items-center justify-center transition-colors">
+          <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 3. REAL-TIME DUBAI TIME TICKER -->
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/10 text-neutral-600 dark:text-neutral-300 text-[11px] font-mono whitespace-nowrap">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="liveClock">DXB 04:45 PM</span>
+      </div>
+
+      <!-- VERTICAL DIVIDER -->
+      <div class="h-6 w-[1px] bg-neutral-200 dark:bg-neutral-800 flex-shrink-0"></div>
+
+      <!-- 4. QUICK ACTIONS & THEME TOGGLE -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle" type="button" aria-label="Toggle Color Theme"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white bg-black/[0.04] dark:bg-white/[0.06] border border-black/5 dark:border-white/10 transition-all hover:scale-105 active:scale-95">
+          <!-- Sun Icon (Dark Mode active) -->
+          <svg class="w-4 h-4 hidden dark:block fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <!-- Moon Icon (Light Mode active) -->
+          <svg class="w-4 h-4 block dark:hidden fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- CTA "Let's Talk" Button -->
+        <a href="mailto:bahaam.coding@gmail.com" 
+           class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-600 hover:to-rose-700 shadow-md shadow-amber-500/20 active:scale-95 transition-all whitespace-nowrap">
+          <span>Let's Talk</span>
+          <svg class="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </nav>
+
+
+    <!-- ============================================================ -->
+    <!-- MOBILE STUDIO BAR & SLIDE-DOWN DRAWER (visible on < md)     -->
+    <!-- ============================================================ -->
+    <div class="md:hidden w-full max-w-sm flex flex-col items-center select-none">
+      
+      <!-- Compact Top Bar (Dead-Center Floating) -->
+      <div class="studio-dock w-full px-4 py-2.5 rounded-full flex items-center justify-between shadow-xl">
+        
+        <!-- Mobile Avatar & Name -->
+        <div class="flex items-center gap-2.5">
+          <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 p-[1.5px] flex items-center justify-center flex-shrink-0">
+            <div class="w-full h-full bg-neutral-900 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+              BM
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-black"></span>
+          </div>
+          <div class="flex flex-col text-left leading-tight">
+            <span class="text-xs font-bold text-neutral-900 dark:text-white whitespace-nowrap">Bahaa Mohammed</span>
+            <span class="text-[9px] text-amber-500 dark:text-amber-400 font-mono whitespace-nowrap">128 BPM • DUBAI</span>
+          </div>
+        </div>
+
+        <!-- Right Quick Controls -->
+        <div class="flex items-center gap-2">
+          <!-- Mobile Mini Play/Pause Button -->
+          <button id="mobilePlayBtn" type="button" aria-label="Toggle Play"
+                  class="w-7 h-7 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 flex items-center justify-center text-xs">
+            <svg id="mobilePauseIcon" class="w-3 h-3 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>
+            <svg id="mobilePlayIcon" class="w-3 h-3 fill-current hidden ml-0.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          </button>
+
+          <!-- Mobile Theme Toggle -->
+          <button id="mobileThemeToggle" type="button" aria-label="Toggle Theme"
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-300 bg-black/5 dark:bg-white/10">
+            <svg class="w-3.5 h-3.5 hidden dark:block fill-none stroke-current stroke-2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+            <svg class="w-3.5 h-3.5 block dark:hidden fill-none stroke-current stroke-2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+
+          <!-- Hamburger Toggle Button -->
+          <button id="mobileMenuBtn" type="button" aria-label="Open Mobile Menu"
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-700 dark:text-neutral-200 bg-black/5 dark:bg-white/10 transition-transform">
+            <svg id="menuBarsIcon" class="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+            <svg id="menuCloseIcon" class="w-4 h-4 fill-none stroke-current stroke-2 hidden" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MOBILE BACKDROP OVERLAY -->
+  <div id="mobileBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <!-- MOBILE STUDIO SLIDE-IN SIDEBAR SHEET -->
+  <aside id="mobileSidebar" class="fixed inset-y-0 right-0 w-80 max-w-[85vw] studio-dock border-l border-black/10 dark:border-white/10 shadow-2xl z-50 flex flex-col justify-between p-6 transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto">
+    <div>
+      <!-- Sidebar Header -->
+      <div class="flex items-center justify-between pb-5 border-b border-black/10 dark:border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 to-rose-600 p-[1.5px] flex items-center justify-center flex-shrink-0">
+            <div class="w-full h-full bg-neutral-900 rounded-full flex items-center justify-center text-xs font-bold text-white">
+              BA
+            </div>
+          </div>
+          <div class="flex flex-col text-left leading-tight">
+            <span class="text-xs font-bold text-neutral-900 dark:text-white whitespace-nowrap">Bahaa Mohammed</span>
+            <span class="text-[9px] text-amber-500 dark:text-amber-400 font-mono whitespace-nowrap">128 BPM • DUBAI</span>
+          </div>
+        </div>
+        <!-- Close Button -->
+        <button id="closeSidebarBtn" class="p-2 rounded-full text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all" aria-label="Close Sidebar">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Sidebar Body -->
+      <div class="mt-6 space-y-4">
+        <!-- Interactive Track Card -->
+        <div class="flex items-center justify-between p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+          <div class="flex items-center gap-2.5">
+            <div id="mobileVinyl" class="w-7 h-7 rounded-full bg-neutral-900 border border-neutral-700 flex items-center justify-center flex-shrink-0 animate-spin-slow">
+              <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+            </div>
+            <div class="flex flex-col text-left leading-tight">
+              <span id="mobileTrackTitle" class="text-xs font-mono font-bold text-neutral-900 dark:text-white whitespace-nowrap">Lofi Code Beats</span>
+              <span class="text-[10px] font-mono text-amber-500">128 BPM • Live Audio</span>
+            </div>
+          </div>
+          <button id="mobileTrackCycle" class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-mono text-neutral-600 dark:text-neutral-300">
+            Next ⏭
+          </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="space-y-1 pt-2">
+          <a href="#work" class="sidebar-link px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white flex items-center justify-between font-semibold text-xs">
+            <span>Work</span>
+            <span class="text-xs font-mono text-neutral-400">01</span>
+          </a>
+          <a href="#projects" class="sidebar-link px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white flex items-center justify-between font-semibold text-xs">
+            <span>Projects</span>
+            <span class="text-xs font-mono text-neutral-400">02</span>
+          </a>
+          <a href="#stack" class="sidebar-link px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white flex items-center justify-between font-semibold text-xs">
+            <span>Stack</span>
+            <span class="text-xs font-mono text-neutral-400">03</span>
+          </a>
+          <a href="#about" class="sidebar-link px-3 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white flex items-center justify-between font-semibold text-xs">
+            <span>About</span>
+            <span class="text-xs font-mono text-neutral-400">04</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="pt-6 border-t border-black/10 dark:border-white/10 space-y-3">
+      <div class="flex items-center justify-between text-xs font-mono text-neutral-500 dark:text-neutral-400 px-1">
+        <span>Studio Clock</span>
+        <span id="mobileClock" class="font-bold text-neutral-900 dark:text-white">DXB 04:45 PM</span>
+      </div>
+      <a href="mailto:bahaam.coding@gmail.com" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-rose-600 text-center text-xs font-bold text-white shadow-md block">
+        Let's Talk →
+      </a>
+      <a href="https://github.com/IBahaaaldin" target="_blank" class="w-full py-2 rounded-xl border border-black/10 dark:border-white/10 text-center text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white block">
+        GitHub @IBahaaaldin
+      </a>
+    </div>
+  </aside>
+
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT: THEME TOGGLE, AUDIO STATE, TABS & TIME TICKER     -->
+  <!-- ============================================================ -->
+  <script>
+    // 1. THEME SWITCHER
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const mobileThemeBtn = document.getElementById('mobileThemeToggle');
+
+    function toggleTheme() {
+      htmlEl.classList.toggle('dark');
+      localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    themeBtn?.addEventListener('click', toggleTheme);
+    mobileThemeBtn?.addEventListener('click', toggleTheme);
+
+    // 2. LIVE CLOCK (DUBAI TIMEZONE GMT+4)
+    function updateDubaiClock() {
+      const now = new Date();
+      const options = {
+        timeZone: 'Asia/Dubai',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      const timeStr = now.toLocaleTimeString('en-US', options);
+      const clockEl = document.getElementById('liveClock');
+      const mobileClockEl = document.getElementById('mobileClock');
+      if (clockEl) clockEl.textContent = `DXB ${timeStr}`;
+      if (mobileClockEl) mobileClockEl.textContent = `DXB ${timeStr}`;
+    }
+    updateDubaiClock();
+    setInterval(updateDubaiClock, 1000);
+
+    // 3. MEDIA PLAYER INTERACTIVITY
+    const tracks = [
+      { title: 'Lofi Code Beats', bpm: '128 BPM • DUBAI FM' },
+      { title: 'Cyberpunk Skyline', bpm: '140 BPM • SYNTHWAVE' },
+      { title: 'Tokyo Rain Lo-Fi', bpm: '85 BPM • CHILLHOP' },
+      { title: 'Deep Focus Ambient', bpm: '110 BPM • CAFFEINE' }
+    ];
+    let currentTrackIdx = 0;
+    let isPlaying = true;
+
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const mobilePlayBtn = document.getElementById('mobilePlayBtn');
+    const nextTrackBtn = document.getElementById('nextTrackBtn');
+    const trackSwitcher = document.getElementById('trackSwitcher');
+    const mobileTrackCycle = document.getElementById('mobileTrackCycle');
+
+    const vinylDisk = document.getElementById('vinylDisk');
+    const mobileVinyl = document.getElementById('mobileVinyl');
+    const eqBars = document.querySelectorAll('#eqContainer span');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const playIcon = document.getElementById('playIcon');
+    const mobilePauseIcon = document.getElementById('mobilePauseIcon');
+    const mobilePlayIcon = document.getElementById('mobilePlayIcon');
+
+    const trackTitleEl = document.getElementById('trackTitle');
+    const trackBpmEl = document.getElementById('trackBpm');
+    const mobileTrackTitleEl = document.getElementById('mobileTrackTitle');
+
+    function togglePlayback() {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        vinylDisk?.classList.remove('vinyl-paused');
+        mobileVinyl?.classList.remove('vinyl-paused');
+        eqBars.forEach(b => b.classList.remove('eq-paused'));
+        pauseIcon?.classList.remove('hidden');
+        playIcon?.classList.add('hidden');
+        mobilePauseIcon?.classList.remove('hidden');
+        mobilePlayIcon?.classList.add('hidden');
+      } else {
+        vinylDisk?.classList.add('vinyl-paused');
+        mobileVinyl?.classList.add('vinyl-paused');
+        eqBars.forEach(b => b.classList.add('eq-paused'));
+        pauseIcon?.classList.add('hidden');
+        playIcon?.classList.remove('hidden');
+        mobilePauseIcon?.classList.add('hidden');
+        mobilePlayIcon?.classList.remove('hidden');
+      }
+    }
+
+    function cycleTrack() {
+      currentTrackIdx = (currentTrackIdx + 1) % tracks.length;
+      const t = tracks[currentTrackIdx];
+      if (trackTitleEl) trackTitleEl.textContent = t.title;
+      if (trackBpmEl) trackBpmEl.textContent = t.bpm;
+      if (mobileTrackTitleEl) mobileTrackTitleEl.textContent = t.title;
+
+      // Ensure playing state when track is changed
+      if (!isPlaying) togglePlayback();
+    }
+
+    playPauseBtn?.addEventListener('click', togglePlayback);
+    mobilePlayBtn?.addEventListener('click', togglePlayback);
+    nextTrackBtn?.addEventListener('click', cycleTrack);
+    trackSwitcher?.addEventListener('click', cycleTrack);
+    mobileTrackCycle?.addEventListener('click', cycleTrack);
+
+    // 4. MAGNETIC SLIDING TABS INDICATOR
+    const tabsContainer = document.getElementById('tabsContainer');
+    const tabIndicator = document.getElementById('tabIndicator');
+    const navTabs = document.querySelectorAll('.nav-tab');
+
+    navTabs.forEach(tab => {
+      tab.addEventListener('mouseenter', () => {
+        const rect = tab.getBoundingClientRect();
+        const containerRect = tabsContainer.getBoundingClientRect();
+        const left = rect.left - containerRect.left;
+        const width = rect.width;
+
+        tabIndicator.style.transform = `translateX(${left}px)`;
+        tabIndicator.style.width = `${width}px`;
+        tabIndicator.style.opacity = '1';
+      });
+    });
+
+    tabsContainer?.addEventListener('mouseleave', () => {
+      tabIndicator.style.opacity = '0';
+    });
+
+    // 5. MOBILE SLIDE-IN SIDEBAR
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const mobileBackdrop = document.getElementById('mobileBackdrop');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    function openMobileSidebar() {
+      mobileBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      mobileBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+      mobileSidebar.classList.remove('translate-x-full');
+      mobileSidebar.classList.add('translate-x-0');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileSidebar() {
+      mobileBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      mobileBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      mobileSidebar.classList.add('translate-x-full');
+      mobileSidebar.classList.remove('translate-x-0');
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuBtn?.addEventListener('click', openMobileSidebar);
+    closeSidebarBtn?.addEventListener('click', closeMobileSidebar);
+    mobileBackdrop?.addEventListener('click', closeMobileSidebar);
+    sidebarLinks.forEach(link => link.addEventListener('click', closeMobileSidebar));
+  </script>
+</body>
+</html>
